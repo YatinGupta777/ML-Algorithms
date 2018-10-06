@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Sep  2 08:23:47 2018
+
+@author: yatingupta
+"""
+
+#Polynomial regression
+
+
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# importing dataset
+
+#x are independent variables that is the first 3
+#y is dependent variable that is purchased
+
+dataset = pd.read_csv('Position_Salaries.csv')
+#position encoded as level already
+x = dataset.iloc[:,1:2].values 
+'''1:2 so that x is a matrix not a vector
+[:,:-1] left means taking all the rows and right means taking all columns -1'''
+y = dataset.iloc[:,2].values
+
+''' Using all the data to train since data is very less and we need to make a accurate 
+    prediction '''
+ 
+#Fitting Linear regression to dataset #To compare both models
+from sklearn.linear_model import LinearRegression
+lin_reg = LinearRegression()
+lin_reg.fit(x,y)
+#Fitting ploynomail Regression to dataset
+from sklearn.preprocessing import PolynomialFeatures
+poly_reg = PolynomialFeatures(degree = 4)
+x_poly = poly_reg.fit_transform(x)
+lin_reg_2 = LinearRegression()
+lin_reg_2.fit(x_poly,y)
+
+#visualising linear regression
+plt.scatter(x,y,color='red')
+plt.plot(x,lin_reg.predict(x),color='blue')
+plt.title("Truth or Bluff(Linear Regression)")
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+#visualising polynomial regression
+x_grid = np.arange(min(x),max(x),0.1)
+x_grid = x_grid.reshape((len(x_grid),1))#X grid is used to refine model further
+plt.scatter(x,y,color='red')
+plt.plot(x_grid,lin_reg_2.predict(poly_reg.fit_transform(x_grid)),color='blue')
+plt.title("Truth or Bluff(Polynomial Regression)")
+plt.xlabel('Position level')
+plt.ylabel('Salary')
+plt.show()
+
+#Predicting a new result with linear regression
+lin_reg.predict(6.5)
+
+#Predicting a new result with polynomial regression
+lin_reg_2.predict(poly_reg.fit_transform(6.5))
